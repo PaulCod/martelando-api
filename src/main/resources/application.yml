@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: martelando-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/martelando_db
+    username: postgres
+    password: 1234567
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
