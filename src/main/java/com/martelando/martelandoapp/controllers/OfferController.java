@@ -42,6 +42,4 @@ public class OfferController {
         var offers = this.offerService.findAllByProductId(productId);
         return ResponseEntity.ok().body(offers);
     }
-
-
 }
