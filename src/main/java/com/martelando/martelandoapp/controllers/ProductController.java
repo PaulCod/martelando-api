@@ -5,6 +5,7 @@ import com.martelando.martelandoapp.controllers.request.SaveProductRequest;
 import com.martelando.martelandoapp.controllers.request.UpdateProductRequest;
 import com.martelando.martelandoapp.controllers.responses.ProductDetailResponse;
 import com.martelando.martelandoapp.sevice.IProductService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class ProductController{
     private IProductService productService;
 
     @PostMapping()
-    ResponseEntity<ProductDetailResponse> create(@RequestBody SaveProductRequest saveProductRequest) {
+    ResponseEntity<ProductDetailResponse> create(@Valid @RequestBody SaveProductRequest saveProductRequest) {
         var product = this.productService.create(saveProductRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
@@ -50,7 +51,7 @@ public class ProductController{
     }
 
     @GetMapping("/search")
-    ResponseEntity<List<ProductDetailResponse>> findByText(@RequestBody FindProductByText findProductByText) {
+    ResponseEntity<List<ProductDetailResponse>> findByText(@RequestParam FindProductByText findProductByText) {
         var product = this.productService.findByTitle(findProductByText.title());
         return ResponseEntity.ok().body(product);
     }
