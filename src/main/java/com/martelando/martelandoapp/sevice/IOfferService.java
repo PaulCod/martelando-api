@@ -1,16 +1,18 @@
 package com.martelando.martelandoapp.sevice;
 
 
-import com.martelando.martelandoapp.dto.OfferDTO;
+import com.martelando.martelandoapp.controllers.request.SaveOfferRequest;
+import com.martelando.martelandoapp.controllers.request.UpdateOfferRequest;
+import com.martelando.martelandoapp.controllers.responses.OfferDetailResponse;
 
 import java.util.List;
 
 public interface IOfferService {
-    OfferDTO create(final OfferDTO offerDTO);
+    OfferDetailResponse create(final SaveOfferRequest saveOfferRequest);
 
     void delete(final Long id);
 
-    OfferDTO update(final OfferDTO offerDTO);
+    OfferDetailResponse update(final UpdateOfferRequest updateOfferRequest);
 
-    List<OfferDTO> findAllByProductId(final Long productId);
+    List<OfferDetailResponse> findAllByProductId(final Long productId);
 }

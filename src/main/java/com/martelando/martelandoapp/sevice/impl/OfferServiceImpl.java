@@ -1,6 +1,8 @@
 package com.martelando.martelandoapp.sevice.impl;
 
-import com.martelando.martelandoapp.dto.OfferDTO;
+import com.martelando.martelandoapp.controllers.request.SaveOfferRequest;
+import com.martelando.martelandoapp.controllers.request.UpdateOfferRequest;
+import com.martelando.martelandoapp.controllers.responses.OfferDetailResponse;
 import com.martelando.martelandoapp.mapper.IOfferMapper;
 import com.martelando.martelandoapp.repository.IOfferRepository;
 import com.martelando.martelandoapp.sevice.IOfferService;
@@ -17,18 +19,18 @@ public class OfferServiceImpl implements IOfferService {
     private final IOfferMapper offerMapper;
 
     @Override
-    public OfferDTO create(OfferDTO offerDTO) {
-        var offer = this.offerRepository.findByBidderIdAndProductId(offerDTO.getBidder().getId(), offerDTO.getProduct().getId());
+    public OfferDetailResponse create(SaveOfferRequest saveOfferRequest) {
+        var offer = this.offerRepository.findByBidderIdAndProductId(saveOfferRequest.bidderId(), saveOfferRequest.productId());
 
         if(offer.isPresent()) {
             throw new IllegalArgumentException("Usuario já fez uma oferta para esse produto");
         }
 
         var offerSaved = this.offerRepository.save(
-                this.offerMapper.offerDTOToOfferEntity(offerDTO)
+                this.offerMapper.toEntity(saveOfferRequest)
         );
 
-        return this.offerMapper.offerEntityToOfferDTO(offerSaved);
+        return this.offerMapper.toResponse(offerSaved);
     }
 
     @Override
@@ -40,22 +42,22 @@ public class OfferServiceImpl implements IOfferService {
     }
 
     @Override
-    public OfferDTO update(OfferDTO offerDTO) {
-        var offer = this.offerRepository.findById(offerDTO.getId())
+    public OfferDetailResponse update(UpdateOfferRequest updateOfferRequest) {
+        var offer = this.offerRepository.findById(updateOfferRequest.id())
                 .orElseThrow(() -> new IllegalArgumentException("Oferta não existe"));
 
-        offer.setStatus(offerDTO.getStatus());
-        offer.setAmount(offerDTO.getAmount());
+        offer.setStatus(updateOfferRequest.status());
+        offer.setAmount(updateOfferRequest.amount());
 
         var offerUpdated = this.offerRepository.save(offer);
 
-        return this.offerMapper.offerEntityToOfferDTO(offerUpdated);
+        return this.offerMapper.toResponse(offerUpdated);
     }
 
     @Override
-    public List<OfferDTO> findAllByProductId(Long productId) {
+    public List<OfferDetailResponse> findAllByProductId(Long productId) {
         var offers = this.offerRepository.findByProductId(productId);
 
-        return offers.stream().map(offerMapper::offerEntityToOfferDTO).toList();
+        return offers.stream().map(offerMapper::toResponse).toList();
     }
 }

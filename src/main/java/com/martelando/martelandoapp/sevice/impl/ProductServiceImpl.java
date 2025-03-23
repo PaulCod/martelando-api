@@ -1,8 +1,11 @@
 package com.martelando.martelandoapp.sevice.impl;
 
-import com.martelando.martelandoapp.dto.ProductDTO;
+import com.martelando.martelandoapp.controllers.request.SaveProductRequest;
+import com.martelando.martelandoapp.controllers.request.UpdateProductRequest;
+import com.martelando.martelandoapp.controllers.responses.ProductDetailResponse;
 import com.martelando.martelandoapp.mapper.IProductMapper;
 import com.martelando.martelandoapp.repository.IProductRepository;
+import com.martelando.martelandoapp.repository.IUserRepository;
 import com.martelando.martelandoapp.sevice.IProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,31 +17,35 @@ import java.util.List;
 public class ProductServiceImpl implements IProductService {
 
     private IProductRepository productRepository;
+    private IUserRepository userRepository;
     private IProductMapper productMapper;
 
     @Override
-    public ProductDTO create(ProductDTO productDTO) {
-        var product = this.productMapper.productDTOToProductEntity(productDTO);
+    public ProductDetailResponse create(SaveProductRequest saveProductRequest) {
+        var owner = this.userRepository.findById(saveProductRequest.ownerId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario não encontrado"));
+
+        var product = this.productMapper.toEntity(saveProductRequest);
+
+        product.setOwner(owner);
 
         var productCreate = this.productRepository.save(product);
 
-        return this.productMapper.productEntityToProductDTO(productCreate);
+        return this.productMapper.toResponse(productCreate);
     }
 
     @Override
-    public ProductDTO update(ProductDTO productDTO) {
-        var product = this.productRepository.findById(productDTO.getId())
+    public ProductDetailResponse update(UpdateProductRequest updateProductRequest) {
+        var product = this.productRepository.findById(updateProductRequest.id())
                 .orElseThrow(() -> new IllegalArgumentException("Produto não existe"));
 
-        product.setImageUrl(productDTO.getImageUrl());
-        product.setDescription(productDTO.getDescription());
-        product.setInitialOffer(productDTO.getInitialOffer());
-        product.setTitle(productDTO.getTitle());
-        product.setEndAt(productDTO.getEndAt());
+        product.setDescription(updateProductRequest.description());
+        product.setTitle(updateProductRequest.title());
+        product.setEndAt(updateProductRequest.endAt());
 
         var productSaved = this.productRepository.save(product);
 
-        return this.productMapper.productEntityToProductDTO(productSaved);
+        return this.productMapper.toResponse(productSaved);
     }
 
     @Override
@@ -50,27 +57,27 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<ProductDTO> getAllProducts() {
+    public List<ProductDetailResponse> getAllProducts() {
         var products = this.productRepository.findAll();
 
         return products.stream().
-                map(productMapper::productEntityToProductDTO)
+                map(productMapper::toResponse)
                 .toList();
     }
 
     @Override
-    public ProductDTO findById(Long id) {
+    public ProductDetailResponse findById(Long id) {
         var product = this.productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
-        return this.productMapper.productEntityToProductDTO(product);
+        return this.productMapper.toResponse(product);
     }
 
     @Override
-    public List<ProductDTO> findByTitle(String title) {
+    public List<ProductDetailResponse> findByTitle(String title) {
         var products = this.productRepository.findByTitleContaining(title);
 
         return products.stream()
-                .map(productMapper::productEntityToProductDTO)
+                .map(productMapper::toResponse)
                 .toList();
     }
 }

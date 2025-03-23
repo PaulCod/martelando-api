@@ -1,13 +1,15 @@
 package com.martelando.martelandoapp.sevice;
 
-import com.martelando.martelandoapp.dto.UserDTO;
+import com.martelando.martelandoapp.controllers.request.SaveUserRequest;
+import com.martelando.martelandoapp.controllers.request.UpdateUserRequest;
+import com.martelando.martelandoapp.controllers.responses.UserDetailResponse;
 
 public interface IUserService {
-    UserDTO create(final UserDTO userDTO);
+    UserDetailResponse create(final SaveUserRequest saveUserRequest);
 
-    UserDTO update(final UserDTO userDTO);
+    UserDetailResponse update(final Long id,final UpdateUserRequest updateUserRequest);
 
     void delete(final Long id);
 
-    UserDTO findByEmail(final String email);
+    UserDetailResponse findByEmail(final String email);
 }

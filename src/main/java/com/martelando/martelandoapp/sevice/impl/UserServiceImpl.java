@@ -1,6 +1,8 @@
 package com.martelando.martelandoapp.sevice.impl;
 
-import com.martelando.martelandoapp.dto.UserDTO;
+import com.martelando.martelandoapp.controllers.request.SaveUserRequest;
+import com.martelando.martelandoapp.controllers.request.UpdateUserRequest;
+import com.martelando.martelandoapp.controllers.responses.UserDetailResponse;
 import com.martelando.martelandoapp.entity.UserEntity;
 import com.martelando.martelandoapp.mapper.IUserMapper;
 import com.martelando.martelandoapp.repository.IUserRepository;
@@ -17,8 +19,8 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public UserDTO create(UserDTO userDTO) {
-        UserEntity entity = userMapper.userDTOToUserEntity(userDTO);
+    public UserDetailResponse create(SaveUserRequest saveUserRequest) {
+        UserEntity entity = userMapper.toEntity(saveUserRequest);
         var userExists = this.userRepository.existsByEmailOrPhone(entity.getEmail(), entity.getPhone());
 
         if(userExists) {
@@ -27,12 +29,12 @@ public class UserServiceImpl implements IUserService {
 
         UserEntity savedUser = this.userRepository.save(entity);
 
-        return userMapper.userEntityToUserDTO(savedUser);
+        return userMapper.toResponse(savedUser);
     }
 
     @Override
-    public UserDTO update(UserDTO userDTO) {
-        UserEntity entity = userMapper.userDTOToUserEntity(userDTO);
+    public UserDetailResponse update(Long id, UpdateUserRequest updateUserRequest) {
+        UserEntity entity = userMapper.toEntity(id, updateUserRequest);
 
         var user = this.userRepository.findById(entity.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario não existe"));
@@ -42,7 +44,7 @@ public class UserServiceImpl implements IUserService {
         user.setPhone(entity.getPhone());
 
         var updatedUser = this.userRepository.save(user);
-        return userMapper.userEntityToUserDTO(updatedUser);
+        return userMapper.toResponse(updatedUser);
     }
 
     @Override
@@ -54,10 +56,10 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDTO findByEmail(String email) {
+    public UserDetailResponse findByEmail(String email) {
         var user = this.userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario não existe"));
 
-        return userMapper.userEntityToUserDTO(user);
+        return userMapper.toResponse(user);
     }
 }
