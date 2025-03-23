@@ -3,6 +3,8 @@ package com.martelando.martelandoapp.sevice.impl;
 import com.martelando.martelandoapp.controllers.request.SaveOfferRequest;
 import com.martelando.martelandoapp.controllers.request.UpdateOfferRequest;
 import com.martelando.martelandoapp.controllers.responses.OfferDetailResponse;
+import com.martelando.martelandoapp.exception.NotFoundException;
+import com.martelando.martelandoapp.exception.UserAlreadyMakeOfferException;
 import com.martelando.martelandoapp.mapper.IOfferMapper;
 import com.martelando.martelandoapp.repository.IOfferRepository;
 import com.martelando.martelandoapp.sevice.IOfferService;
@@ -23,7 +25,7 @@ public class OfferServiceImpl implements IOfferService {
         var offer = this.offerRepository.findByBidderIdAndProductId(saveOfferRequest.bidderId(), saveOfferRequest.productId());
 
         if(offer.isPresent()) {
-            throw new IllegalArgumentException("Usuario já fez uma oferta para esse produto");
+            throw new UserAlreadyMakeOfferException("Usuario já fez uma oferta para esse produto");
         }
 
         var offerSaved = this.offerRepository.save(
@@ -36,7 +38,7 @@ public class OfferServiceImpl implements IOfferService {
     @Override
     public void delete(Long id) {
         var offer = this.offerRepository.findById(id)
-                .orElseThrow(() ->  new IllegalArgumentException("Oferta não existe"));
+                .orElseThrow(() ->  new NotFoundException("Oferta não existe"));
 
         this.offerRepository.delete(offer);
     }
@@ -44,7 +46,7 @@ public class OfferServiceImpl implements IOfferService {
     @Override
     public OfferDetailResponse update(UpdateOfferRequest updateOfferRequest) {
         var offer = this.offerRepository.findById(updateOfferRequest.id())
-                .orElseThrow(() -> new IllegalArgumentException("Oferta não existe"));
+                .orElseThrow(() -> new NotFoundException("Oferta não existe"));
 
         offer.setStatus(updateOfferRequest.status());
         offer.setAmount(updateOfferRequest.amount());

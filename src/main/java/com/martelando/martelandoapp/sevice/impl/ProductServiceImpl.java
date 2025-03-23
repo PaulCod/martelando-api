@@ -3,6 +3,7 @@ package com.martelando.martelandoapp.sevice.impl;
 import com.martelando.martelandoapp.controllers.request.SaveProductRequest;
 import com.martelando.martelandoapp.controllers.request.UpdateProductRequest;
 import com.martelando.martelandoapp.controllers.responses.ProductDetailResponse;
+import com.martelando.martelandoapp.exception.NotFoundException;
 import com.martelando.martelandoapp.mapper.IProductMapper;
 import com.martelando.martelandoapp.repository.IProductRepository;
 import com.martelando.martelandoapp.repository.IUserRepository;
@@ -23,7 +24,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductDetailResponse create(SaveProductRequest saveProductRequest) {
         var owner = this.userRepository.findById(saveProductRequest.ownerId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
 
         var product = this.productMapper.toEntity(saveProductRequest);
 
@@ -37,7 +38,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductDetailResponse update(UpdateProductRequest updateProductRequest) {
         var product = this.productRepository.findById(updateProductRequest.id())
-                .orElseThrow(() -> new IllegalArgumentException("Produto não existe"));
+                .orElseThrow(() -> new NotFoundException("Produto não existe"));
 
         product.setDescription(updateProductRequest.description());
         product.setTitle(updateProductRequest.title());
@@ -51,7 +52,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public void delete(Long id) {
         var product = this.productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não existe"));
+                .orElseThrow(() -> new NotFoundException("Produto não existe"));
 
         this.productRepository.delete(product);
     }
@@ -68,7 +69,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductDetailResponse findById(Long id) {
         var product = this.productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
         return this.productMapper.toResponse(product);
     }
 
