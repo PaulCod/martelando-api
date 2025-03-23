@@ -7,6 +7,7 @@ import com.martelando.martelandoapp.entity.UserEntity;
 import com.martelando.martelandoapp.exception.NotFoundException;
 import com.martelando.martelandoapp.mapper.IUserMapper;
 import com.martelando.martelandoapp.repository.IUserRepository;
+import com.martelando.martelandoapp.sevice.IPasswordEncoderService;
 import com.martelando.martelandoapp.sevice.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class UserServiceImpl implements IUserService {
 
     private final IUserRepository userRepository;
     private final IUserMapper userMapper;
+    private final IPasswordEncoderService passwordEncoderService;
 
 
     @Override
@@ -28,6 +30,7 @@ public class UserServiceImpl implements IUserService {
             throw new NotFoundException("Usuario já existe");
         }
 
+        entity.setPassword(passwordEncoderService.encode(entity.getPassword()));
         UserEntity savedUser = this.userRepository.save(entity);
 
         return userMapper.toResponse(savedUser);
@@ -40,8 +43,11 @@ public class UserServiceImpl implements IUserService {
         var user = this.userRepository.findById(entity.getId())
                 .orElseThrow(() -> new NotFoundException("Usuario não existe"));
 
+        if(!passwordEncoderService.matches(entity.getPassword(), user.getPassword())) {
+            user.setPassword(passwordEncoderService.encode(entity.getPassword()));
+        }
+
         user.setName(entity.getName());
-        user.setPassword(entity.getPassword());
         user.setPhone(entity.getPhone());
 
         var updatedUser = this.userRepository.save(user);
@@ -63,4 +69,11 @@ public class UserServiceImpl implements IUserService {
 
         return userMapper.toResponse(user);
     }
+
+    @Override
+    public UserEntity findByEmailWithPassword(String email) {
+        return this.userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuario não existe"));
+    }
+
 }
