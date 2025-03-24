@@ -6,13 +6,14 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private final SecretKey secretKey = Jwts.SIG.HS512.key().build();
+    private final String secretString = "ahsdMNXB3FZ2gsjULydWXvYFofSTUrezGbVaNIjVQNCWIjaph2KqCXUfG7V8jZTBF2tRJiPPYzEMrrIKpZ/aug==";
+    private final SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretString));
 
 
     public Long extractUserId(String token) {
@@ -46,7 +47,13 @@ public class JwtService {
                 .compact();
     }
 
-//    private Key getSignKey() {
-//        return Keys.hmacShaKeyFor(secretKey.getEncoded());
-//    }
+    public Long extractUserIdFromToken(String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer", "");
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build().parseSignedClaims(token)
+                .getPayload();
+        return claims.get("userId", Long.class);
+    }
+
 }

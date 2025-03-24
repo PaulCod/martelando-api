@@ -20,8 +20,9 @@ public interface IUserMapper {
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "products", ignore = true)
+    @Mapping(target = "email", ignore = true)
     UserEntity toEntity(final Long id, final UpdateUserRequest updateUserRequest);
 
-    @Mapping(target = "password", ignore = true)
+//    @Mapping(target = "password", ignore = true)
     UserDetailResponse toResponse(final UserEntity userEntity);
 }

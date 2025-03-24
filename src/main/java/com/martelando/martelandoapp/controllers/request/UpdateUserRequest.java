@@ -16,7 +16,7 @@ public record UpdateUserRequest(
         String password,
 
         @NotNull
-        @Size(min = 10, max = 11, message = "O telefone deve ter entre 10 e 11 caracteres")
+        @Size(min = 11, max = 11, message = "O telefone deve ter 11 caracteres")
         @JsonProperty("phone")
         String phone
 ) {}

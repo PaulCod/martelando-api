@@ -19,8 +19,8 @@ public class OfferEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "bidden_id", nullable = false)
-    private UserEntity bidden;
+    @JoinColumn(name = "bidder_id", nullable = false)
+    private UserEntity bidder;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)

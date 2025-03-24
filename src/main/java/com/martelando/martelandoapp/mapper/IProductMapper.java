@@ -4,6 +4,7 @@ import com.martelando.martelandoapp.controllers.request.SaveProductRequest;
 import com.martelando.martelandoapp.controllers.request.UpdateProductRequest;
 import com.martelando.martelandoapp.controllers.responses.ProductDetailResponse;
 import com.martelando.martelandoapp.entity.ProductEntity;
+import com.martelando.martelandoapp.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -24,4 +25,12 @@ public interface IProductMapper {
 
     ProductDetailResponse toResponse(final ProductEntity productEntity);
 
+    default UserEntity map(Long ownerId){
+        if(ownerId == null) {
+            return null;
+        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(ownerId);
+        return userEntity;
+    }
 }
