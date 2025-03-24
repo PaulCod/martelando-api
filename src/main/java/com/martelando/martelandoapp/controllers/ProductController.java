@@ -5,6 +5,7 @@ import com.martelando.martelandoapp.controllers.request.SaveProductRequest;
 import com.martelando.martelandoapp.controllers.request.UpdateProductRequest;
 import com.martelando.martelandoapp.controllers.responses.ProductDetailResponse;
 import com.martelando.martelandoapp.sevice.IProductService;
+import com.martelando.martelandoapp.sevice.JwtService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,22 +20,27 @@ import java.util.List;
 public class ProductController{
 
     private IProductService productService;
+    private JwtService jwtService;
 
     @PostMapping()
-    ResponseEntity<ProductDetailResponse> create(@Valid @RequestBody SaveProductRequest saveProductRequest) {
-        var product = this.productService.create(saveProductRequest);
+    ResponseEntity<ProductDetailResponse> create(@RequestHeader("Authorization") String authorizationHeader,
+                                                 @Valid @RequestBody SaveProductRequest saveProductRequest) {
+        Long ownerId = jwtService.extractUserIdFromToken(authorizationHeader);
+        var product = this.productService.create(ownerId, saveProductRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> delete(@PathVariable Long id) {
-        this.productService.delete(id);
+    ResponseEntity<Void> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id) {
+        Long ownerId = jwtService.extractUserIdFromToken(authorizationHeader);
+        this.productService.delete(ownerId, id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping()
-    ResponseEntity<ProductDetailResponse> update(@RequestBody UpdateProductRequest updateProductRequest) {
-        var updateProduct = this.productService.update(updateProductRequest);
+    ResponseEntity<ProductDetailResponse> update(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UpdateProductRequest updateProductRequest) {
+        Long ownerId = jwtService.extractUserIdFromToken(authorizationHeader);
+        var updateProduct = this.productService.update(ownerId, updateProductRequest);
         return ResponseEntity.ok().body(updateProduct);
     }
 

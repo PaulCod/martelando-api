@@ -1,9 +1,6 @@
 package com.martelando.martelandoapp.exceptionhandler;
 
-import com.martelando.martelandoapp.exception.EmailInUseException;
-import com.martelando.martelandoapp.exception.NotFoundException;
-import com.martelando.martelandoapp.exception.PhoneInUseException;
-import com.martelando.martelandoapp.exception.UserAlreadyMakeOfferException;
+import com.martelando.martelandoapp.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,5 +31,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericException(Exception ex) {
         return new ResponseEntity<>("Erro interno do servidor: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(UnauthorizedProductUpdate.class)
+    public ResponseEntity<String> handleUnauthorizedProductUpdate(UnauthorizedProductUpdate ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 }

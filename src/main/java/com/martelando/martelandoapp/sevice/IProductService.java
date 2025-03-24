@@ -7,11 +7,11 @@ import com.martelando.martelandoapp.controllers.responses.ProductDetailResponse;
 import java.util.List;
 
 public interface IProductService {
-    ProductDetailResponse create(final SaveProductRequest saveProductRequest);
+    ProductDetailResponse create(final Long ownerID, final SaveProductRequest saveProductRequest);
 
-    ProductDetailResponse update(final UpdateProductRequest updateProductRequest);
+    ProductDetailResponse update(final Long ownerId, final UpdateProductRequest updateProductRequest);
 
-    void delete(final Long id);
+    void delete(final Long ownerId, final Long id);
 
     List<ProductDetailResponse> getAllProducts();
 

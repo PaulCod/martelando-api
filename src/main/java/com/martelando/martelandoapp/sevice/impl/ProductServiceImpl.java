@@ -4,6 +4,7 @@ import com.martelando.martelandoapp.controllers.request.SaveProductRequest;
 import com.martelando.martelandoapp.controllers.request.UpdateProductRequest;
 import com.martelando.martelandoapp.controllers.responses.ProductDetailResponse;
 import com.martelando.martelandoapp.exception.NotFoundException;
+import com.martelando.martelandoapp.exception.UnauthorizedProductUpdate;
 import com.martelando.martelandoapp.mapper.IProductMapper;
 import com.martelando.martelandoapp.repository.IProductRepository;
 import com.martelando.martelandoapp.repository.IUserRepository;
@@ -22,8 +23,8 @@ public class ProductServiceImpl implements IProductService {
     private IProductMapper productMapper;
 
     @Override
-    public ProductDetailResponse create(SaveProductRequest saveProductRequest) {
-        var owner = this.userRepository.findById(saveProductRequest.ownerId())
+    public ProductDetailResponse create(final Long ownerId ,SaveProductRequest saveProductRequest) {
+        var owner = this.userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
 
         var product = this.productMapper.toEntity(saveProductRequest);
@@ -36,9 +37,13 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public ProductDetailResponse update(UpdateProductRequest updateProductRequest) {
+    public ProductDetailResponse update(final Long ownerId, UpdateProductRequest updateProductRequest) {
         var product = this.productRepository.findById(updateProductRequest.id())
                 .orElseThrow(() -> new NotFoundException("Produto não existe"));
+
+        if(!product.getOwner().getId().equals(ownerId)) {
+            throw new UnauthorizedProductUpdate("Usuario não pode modificar o produto");
+        }
 
         product.setDescription(updateProductRequest.description());
         product.setTitle(updateProductRequest.title());
@@ -50,9 +55,13 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long ownerId, Long id) {
         var product = this.productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Produto não existe"));
+
+        if(!product.getOwner().getId().equals(ownerId)) {
+            throw new UnauthorizedProductUpdate("Usuario não pode deletar o produto");
+        }
 
         this.productRepository.delete(product);
     }
