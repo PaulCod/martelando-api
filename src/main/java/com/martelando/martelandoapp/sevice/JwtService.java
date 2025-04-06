@@ -48,7 +48,9 @@ public class JwtService {
     }
 
     public Long extractUserIdFromToken(String authorizationHeader) {
-        String token = authorizationHeader.replace("Bearer", "");
+        String token = authorizationHeader.startsWith("Bearer")
+                ? authorizationHeader.substring(7).trim()
+                : authorizationHeader.trim();
         Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
                 .build().parseSignedClaims(token)

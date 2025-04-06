@@ -9,10 +9,6 @@ import java.sql.Timestamp;
 
 public record SaveProductRequest (
     @NotNull
-    @JsonProperty("owner_id")
-    Long ownerId,
-
-    @NotNull
     @Pattern(regexp = "^https?://.*$", message = "Image URL deve começar com 'http' ou 'https'")
     @JsonProperty("image_url")
     String imageUrl,
@@ -36,12 +32,10 @@ public record SaveProductRequest (
     @JsonProperty("status")
     ProductStatus status,
 
-    @NotNull
     @Future(message = "A data de inicio deve estar no futuro")
     @JsonProperty("start_at")
     Timestamp startAt,
 
-    @NotNull
     @Future(message = "A data de fim deve estar no futuro")
     @JsonProperty("end_at")
     Timestamp endAt

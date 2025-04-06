@@ -42,6 +42,13 @@ public class ProductEntity {
     @Column(nullable = false)
     private Timestamp startAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Timestamp endAt;
+
+    @PrePersist
+    public void prePersist() {
+        if(this.startAt == null) {
+            this.startAt = new Timestamp(System.currentTimeMillis());
+        }
+    }
 }

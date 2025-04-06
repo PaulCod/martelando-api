@@ -17,7 +17,7 @@ public interface IProductMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "owner", source = "ownerId")
-    ProductEntity toEntity(final SaveProductRequest saveProductRequest);
+    ProductEntity toEntity(final SaveProductRequest saveProductRequest, Long ownerId);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "owner", ignore = true)

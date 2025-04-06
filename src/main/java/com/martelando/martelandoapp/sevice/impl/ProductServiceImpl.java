@@ -27,7 +27,7 @@ public class ProductServiceImpl implements IProductService {
         var owner = this.userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
 
-        var product = this.productMapper.toEntity(saveProductRequest);
+        var product = this.productMapper.toEntity(saveProductRequest, ownerId);
 
         product.setOwner(owner);
 
