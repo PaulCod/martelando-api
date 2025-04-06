@@ -15,4 +15,6 @@ public interface IUserService {
     UserDetailResponse findByEmail(final String email);
 
     UserEntity findByEmailWithPassword(final String email);
+
+    UserDetailResponse findByUserId(final Long id);
 }

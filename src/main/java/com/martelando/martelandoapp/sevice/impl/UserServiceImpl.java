@@ -76,4 +76,12 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new NotFoundException("Usuario não existe"));
     }
 
+    @Override
+    public UserDetailResponse findByUserId(Long id) {
+        var user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario não existe"));
+
+        return userMapper.toResponse(user);
+    }
+
 }

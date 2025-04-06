@@ -55,4 +55,11 @@ public class AuthController {
         userService.delete(userId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping()
+    public ResponseEntity<UserDetailResponse> getUserById(@RequestHeader("Authorization") String authorizationHeader) {
+        Long userId = jwtService.extractUserIdFromToken(authorizationHeader);
+        UserDetailResponse userDetailResponse = userService.findByUserId(userId);
+        return ResponseEntity.ok(userDetailResponse);
+    }
 }
