@@ -39,7 +39,7 @@ public class ProductEntity {
     @Column(nullable = false)
     private ProductStatus status;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Timestamp startAt;
 
     @Column(nullable = true)

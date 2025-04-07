@@ -8,9 +8,6 @@ import java.math.BigDecimal;
 
 public record SaveOfferRequest (
     @NotNull
-    @JsonProperty("bidder_id")
-    Long bidderId,
-    @NotNull
     @JsonProperty("product_id")
     Long productId,
     @NotNull

@@ -16,42 +16,13 @@ public interface IOfferMapper {
 
     IOfferMapper INSTANCE = Mappers.getMapper(IOfferMapper.class);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "product", source = "productId")
-    @Mapping(target = "bidder", source = "bidderId")
-    OfferEntity toEntity(SaveOfferRequest saveOfferRequest);
 
-    @Mapping(target = "bidder", source = "bidder.id")
+    @Mapping(target = "id", ignore = true) // Ignora o id durante o mapeamento
+    @Mapping(target = "bidder", source = "bidder")
+    @Mapping(target = "product", source = "product")
+    @Mapping(target = "amount", source = "saveOfferRequest.amount")
+    @Mapping(target = "status", source = "saveOfferRequest.status")
+    OfferEntity toEntity(SaveOfferRequest saveOfferRequest, UserEntity bidder,ProductEntity product);
+
     OfferDetailResponse toResponse(OfferEntity offerEntity);
-
-    default UserEntity mapUser(Long userId) {
-        if (userId == null) {
-            return null;
-        }
-        var user = new UserEntity();
-        user.setId(userId);
-        return user;
-    }
-
-
-    default ProductEntity mapProduct(Long productId) {
-        if (productId == null) {
-            return null;
-        }
-        var product = new ProductEntity();
-        product.setId(productId);
-        return product;
-    }
-
-    default UserDetailResponse mapUserDetailResponse(UserEntity userEntity) {
-        if (userEntity == null) {
-            return null;
-        }
-        return new UserDetailResponse(
-                userEntity.getId(),
-                userEntity.getName(),
-                userEntity.getEmail(),
-                userEntity.getPhone()
-        );
-    }
 }

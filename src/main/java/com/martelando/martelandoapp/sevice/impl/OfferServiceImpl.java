@@ -8,8 +8,10 @@ import com.martelando.martelandoapp.exception.UnauthorizedOfferUpdate;
 import com.martelando.martelandoapp.exception.UserAlreadyMakeOfferException;
 import com.martelando.martelandoapp.mapper.IOfferMapper;
 import com.martelando.martelandoapp.repository.IOfferRepository;
+import com.martelando.martelandoapp.repository.IProductRepository;
 import com.martelando.martelandoapp.repository.IUserRepository;
 import com.martelando.martelandoapp.sevice.IOfferService;
+import com.martelando.martelandoapp.sevice.IProductService;
 import com.martelando.martelandoapp.sevice.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,11 +25,15 @@ public class OfferServiceImpl implements IOfferService {
     private final IOfferRepository offerRepository;
     private final IOfferMapper offerMapper;
     private final IUserRepository userRepository;
+    private final IProductRepository productRepository;
 
 
     @Override
     public OfferDetailResponse create(Long userId, SaveOfferRequest saveOfferRequest) {
-        var offer = this.offerRepository.findByBidderIdAndProductId(saveOfferRequest.bidderId(), saveOfferRequest.productId());
+        var product = productRepository.findById(saveOfferRequest.productId())
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
+
+        var offer = this.offerRepository.findByBidderIdAndProductId(userId, saveOfferRequest.productId());
 
         if(!userRepository.existsById(userId)) {
             throw new NotFoundException("Usuario não existe");
@@ -37,9 +43,13 @@ public class OfferServiceImpl implements IOfferService {
             throw new UserAlreadyMakeOfferException("Usuario já fez uma oferta para esse produto");
         }
 
+        var bidder = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+
+        var offerEntity = offerMapper.toEntity(saveOfferRequest, bidder, product);
 
         var offerSaved = this.offerRepository.save(
-                this.offerMapper.toEntity(saveOfferRequest)
+                offerEntity
         );
 
         return this.offerMapper.toResponse(offerSaved);
